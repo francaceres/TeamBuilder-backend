@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// MODELS
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash String
+
+  groups UserInGroup[]
+
+  @@map("users")
+}
+
+model Group {
+  id String @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  description String?
+  visualization GroupVisualization
+
+  users UserInGroup[]
+
+  players Player[]
+  matches Match[]
+
+  @@map("groups")
+}
+
+model UserInGroup {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  groupId String @db.Uuid
+  role UserInGroupRole @default(VIEWER)
+
+  user User @relation(fields: [userId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
+
+  @@map("users_in_groups")
+}
+
+model Player {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  description String?
+
+  groupId String @db.Uuid
+  group Group @relation(fields: [groupId], references: [id])
+
+  teams Team[]
+
+  @@map("players")
+}
+
+model Match {
+  id String @id @default(uuid()) @db.Uuid
+  date DateTime @default(now())
+  teams Team[]
+
+  groupId String @db.Uuid
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@map("matches")
+}
+
+model Team {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  result TeamResults?
+  score Int?
+
+  matchId String @db.Uuid
+  match Match @relation(fields: [matchId], references: [id])
+  players Player[]
+
+  @@map("teams")
+}
+
+
+// ENUMS
+
+enum GroupVisualization {
+  PUBLIC
+  PRIVATE
+
+  @@map("group_visualization_enum")
+}
+
+enum UserInGroupRole {
+  ADMIN
+  VIEWER
+
+  @@map("user_in_group_role_enum")
+}
+
+enum TeamResults {
+  WIN
+  LOSE
+  TIE
+
+  @@map("team_results_enum")
+}
+
