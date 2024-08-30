@@ -17,6 +17,8 @@ model User {
   email String @unique
   hash String
 
+  name String
+
   groups UserInGroup[]
 
   @@map("users")
