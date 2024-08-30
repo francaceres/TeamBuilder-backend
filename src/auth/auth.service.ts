@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SignupDTO } from './dto';
+import { LoginDTO, SignupDTO } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
@@ -36,6 +36,18 @@ export class AuthService {
         throw new Error('An error occured during signup');
       }
     }
+  }
+
+  async login(DTO: LoginDTO) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: DTO.email },
+    });
+    if (!user) throw new ForbiddenException('Credentials incorrect');
+
+    const passwordMatches = await argon.verify(user.hash, DTO.password);
+    if (!passwordMatches) throw new ForbiddenException('Credentials incorrect');
+
+    return this.signToken(user.id, user.email);
   }
 
   async signToken(userId: string, email: string) {
