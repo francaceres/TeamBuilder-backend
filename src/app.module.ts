@@ -8,6 +8,7 @@ import {
   AllExceptionsFilter,
   PrismaClientExceptionFilter,
 } from './shared/filters';
+import { GroupsModule } from './modules/groups/groups.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import {
     PrismaModule,
     AuthModule,
     UsersModule,
+    GroupsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: PrismaClientExceptionFilter },
