@@ -20,20 +20,17 @@ import { UserInGroupRole } from '@prisma/client';
 export class GroupsController {
   constructor(private groupService: GroupsService) {}
 
-  // CREATE group
   @UseGuards(JwtAuthGuard)
   @Post()
   createGroup(@Body() dto: CreateGroupDTO, @CurrentUser() user: RequestUser) {
     return this.groupService.createGroup(dto, user);
   }
 
-  // GET group info (public)
   @Get('/:groupId')
   getGroupInfo(@Param('groupId') groupId: string) {
     return this.groupService.getGroupInfo(groupId);
   }
 
-  // UPDATE group (admin)
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Patch(':groupId')
@@ -41,7 +38,6 @@ export class GroupsController {
     return this.groupService.updateGroup(groupId, dto);
   }
 
-  // DELETE group (owner)
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.OWNER])
   @Delete(':groupId')
@@ -49,9 +45,6 @@ export class GroupsController {
     return this.groupService.deleteGroup(groupId);
   }
 
-  // Add user to group (admin)
-  // Edit user permissions (admin)
-  // Transfer ownership (owner)
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Patch(':groupId/user/:userId/role/:role')
