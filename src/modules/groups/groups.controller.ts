@@ -8,7 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CreateGroupDTO, UpdateGroupDTO } from './dto';
+import { CreateGroupDTO, UpdateGroupDTO, UserToGroupDTO } from './dto';
 import { GroupsService } from './groups.service';
 import { CurrentUser } from 'src/shared/decorators';
 import { RequestUser } from 'src/shared/types';
@@ -46,5 +46,10 @@ export class GroupsController {
   // Add user to group (admin)
   // Edit user permissions (admin)
   // Transfer ownership (owner)
-  // GET group history (member or public)
+  @Patch(':groupId/user/:userId/role/:role')
+  editUserRolesInGroup(@Param() params: UserToGroupDTO) {
+    return this.groupService.editUserRolesInGroup(params);
+  }
+
+  // GET group history (member or public) <--- ver cuando tenga matches
 }
