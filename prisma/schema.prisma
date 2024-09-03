@@ -103,6 +103,7 @@ enum GroupVisualization {
 }
 
 enum UserInGroupRole {
+  OWNER
   ADMIN
   VIEWER
 
