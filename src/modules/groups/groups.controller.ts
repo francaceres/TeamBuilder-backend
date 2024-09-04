@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -38,6 +40,7 @@ export class GroupsController {
     return this.groupService.updateGroup(groupId, dto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.OWNER])
   @Delete(':groupId')
