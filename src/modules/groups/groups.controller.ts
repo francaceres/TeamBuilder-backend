@@ -15,8 +15,8 @@ import { GroupsService } from './groups.service';
 import { CurrentUser, GroupRoles } from 'src/shared/decorators';
 import { RequestUser } from 'src/shared/types';
 import { JwtAuthGuard } from '../auth/guards';
-import { RoleBasedGroupAccessGuard } from 'src/shared/guards/role-based-group-access.guard';
 import { UserInGroupRole } from '@prisma/client';
+import { RoleBasedGroupAccessGuard } from 'src/shared/guards';
 
 @Controller('groups')
 export class GroupsController {
@@ -57,7 +57,4 @@ export class GroupsController {
   ) {
     return this.groupService.editUserRolesInGroup(params, user);
   }
-
-  // GET group history (member or public) <--- ver cuando tenga matches
-  // GET group players (member or public) <--- idem para players
 }
