@@ -39,6 +39,7 @@ export class PlayersController {
     return this.playerService.getPlayer(playerId);
   }
 
+  @UseGuards(VisibilityBasedGroupAccessGuard)
   @Get()
   getPlayers(
     @Param('groupId') groupId: string,
