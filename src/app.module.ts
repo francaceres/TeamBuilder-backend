@@ -10,6 +10,7 @@ import {
 } from './shared/filters';
 import { GroupsModule } from './modules/groups/groups.module';
 import { PlayersModule } from './modules/players/players.module';
+import { MatchesModule } from './modules/matches/matches.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PlayersModule } from './modules/players/players.module';
     UsersModule,
     GroupsModule,
     PlayersModule,
+    MatchesModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: PrismaClientExceptionFilter },

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 export enum SortOrder {
   ASC = 'asc',
@@ -10,6 +10,16 @@ export class FindManyOptionsDTO {
   @IsOptional()
   @IsString()
   filter?: string;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  startDate?: Date;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  endDate?: Date;
 
   @IsOptional()
   @IsInt()
