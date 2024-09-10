@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateGroupDTO, UpdateGroupDTO } from './dto';
 import { RequestUser } from 'src/shared/types';
-import { UserToGroupDTO } from './dto/user-to-group.dto';
 import { UserInGroupRole } from '@prisma/client';
 
 @Injectable()
@@ -39,9 +38,12 @@ export class GroupsService {
     });
   }
 
-  async editUserRolesInGroup(dto: UserToGroupDTO, currentUser: RequestUser) {
-    const { groupId, userId, role } = dto;
-
+  async editUserRolesInGroup(
+    groupId: string,
+    userId: string,
+    role: UserInGroupRole,
+    currentUser: RequestUser,
+  ) {
     if (role === UserInGroupRole.OWNER) {
       const userInGroup = await this.prisma.userInGroup.findUnique({
         where: {

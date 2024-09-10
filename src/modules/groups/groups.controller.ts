@@ -8,9 +8,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateGroupDTO, UpdateGroupDTO, UserToGroupDTO } from './dto';
+import { CreateGroupDTO, UpdateGroupDTO } from './dto';
 import { GroupsService } from './groups.service';
 import { CurrentUser, GroupRoles } from 'src/shared/decorators';
 import { RequestUser } from 'src/shared/types';
@@ -50,11 +51,13 @@ export class GroupsController {
 
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
-  @Patch(':groupId/user/:userId/role/:role')
+  @Patch(':groupId/user/:userId')
   editUserRolesInGroup(
-    @Param() params: UserToGroupDTO,
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+    @Query('role') role: UserInGroupRole,
     @CurrentUser() user: RequestUser,
   ) {
-    return this.groupService.editUserRolesInGroup(params, user);
+    return this.groupService.editUserRolesInGroup(groupId, userId, role, user);
   }
 }
