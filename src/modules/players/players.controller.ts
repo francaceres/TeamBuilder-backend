@@ -21,11 +21,22 @@ import {
 import { JwtAuthGuard } from '../auth/guards';
 import { GroupRoles } from 'src/shared/decorators';
 import { UserInGroupRole } from '@prisma/client';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  AdminRoleSwaggerDescription,
+  VisibilitySwaggerDescription,
+} from 'src/shared/constants';
 
+@ApiTags('Players')
 @Controller('groups/:groupId/players')
 export class PlayersController {
   constructor(private playerService: PlayersService) {}
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Creates a player associated to a group',
+    description: AdminRoleSwaggerDescription,
+  })
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Post()
@@ -36,12 +47,20 @@ export class PlayersController {
     return this.playerService.createPlayer(groupId, dto);
   }
 
+  @ApiOperation({
+    summary: 'Gets a player info and matches',
+    description: VisibilitySwaggerDescription,
+  })
   @UseGuards(VisibilityBasedGroupAccessGuard)
   @Get('/:playerId')
   getPlayer(@Param('playerId') playerId: string) {
     return this.playerService.getPlayer(playerId);
   }
 
+  @ApiOperation({
+    summary: 'Gets all players from a group',
+    description: VisibilitySwaggerDescription,
+  })
   @UseGuards(VisibilityBasedGroupAccessGuard)
   @Get()
   getPlayers(
@@ -51,6 +70,11 @@ export class PlayersController {
     return this.playerService.getPlayers(groupId, query);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Updates a player info',
+    description: AdminRoleSwaggerDescription,
+  })
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Patch('/:playerId')
@@ -61,6 +85,11 @@ export class PlayersController {
     return this.playerService.updatePlayer(playerId, dto);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Deletes a player',
+    description: AdminRoleSwaggerDescription,
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
