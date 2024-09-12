@@ -60,4 +60,9 @@ export class GroupsController {
   ) {
     return this.groupService.editUserRolesInGroup(groupId, userId, role, user);
   }
+
+  @Get('/empty/:userId')
+  checkGroupsToBeEmptied(@Param('userId') userId: string) {
+    return this.groupService.checkGroupsToBeEmptied(userId);
+  }
 }

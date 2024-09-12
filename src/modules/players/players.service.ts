@@ -8,11 +8,10 @@ import { Prisma } from '@prisma/client';
 export class PlayersService {
   constructor(private prisma: PrismaService) {}
 
-  async createPlayer(dto: CreatePlayerDTO) {
-    const { groupId, ...data } = dto;
+  async createPlayer(groupId: string, dto: CreatePlayerDTO) {
     return await this.prisma.player.create({
       data: {
-        ...data,
+        ...dto,
         group: {
           connect: { id: groupId },
         },
