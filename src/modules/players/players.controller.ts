@@ -29,8 +29,11 @@ export class PlayersController {
   @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Post()
-  createPlayer(@Body() dto: CreatePlayerDTO) {
-    return this.playerService.createPlayer(dto);
+  createPlayer(
+    @Param('groupId') groupId: string,
+    @Body() dto: CreatePlayerDTO,
+  ) {
+    return this.playerService.createPlayer(groupId, dto);
   }
 
   @UseGuards(VisibilityBasedGroupAccessGuard)

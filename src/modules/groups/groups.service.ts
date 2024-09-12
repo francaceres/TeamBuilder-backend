@@ -81,4 +81,17 @@ export class GroupsService {
     await this.prisma.group.delete({ where: { id: groupId } });
     return;
   }
+
+  async checkGroupsToBeEmptied(userId: string) {
+    const groupsWithUser = await this.prisma.group.findMany({
+      where: { users: { some: { userId } } },
+      include: { users: true },
+    });
+
+    const groupsToBeEmptied = groupsWithUser.filter(
+      (group) => group.users.length === 1,
+    );
+
+    return { groupsToBeEmptied };
+  }
 }
