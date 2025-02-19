@@ -73,7 +73,7 @@ export class GroupAccessGuard implements CanActivate {
 
     // Case 1: non authenticated user
     if (!user) {
-      return !isPrivate && roles.length === 0;
+      return !isPrivate && !roles;
     }
 
     // Case 2: private group
@@ -84,7 +84,7 @@ export class GroupAccessGuard implements CanActivate {
         return false;
       }
 
-      if (roles || roles.length === 0) {
+      if (!roles) {
         return true;
       }
 
@@ -97,7 +97,7 @@ export class GroupAccessGuard implements CanActivate {
     }
 
     // Case 3: public group
-    if (roles.length === 0) {
+    if (!roles) {
       return true;
     }
 
