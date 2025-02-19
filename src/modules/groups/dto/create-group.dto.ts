@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GroupVisualization } from '@prisma/client';
+import {
+  GroupVisualization,
+  UserInGroup,
+  UserInGroupRole,
+} from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateGroupDTO {
@@ -20,4 +24,10 @@ export class CreateGroupDTO {
   @IsNotEmpty()
   @IsEnum(GroupVisualization)
   visualization: GroupVisualization;
+
+  @ApiProperty({
+    description: 'Users in group (owner for creation)',
+    enum: UserInGroupRole,
+  })
+  users: UserInGroup[];
 }

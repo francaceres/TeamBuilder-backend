@@ -37,6 +37,7 @@ model Group {
 
   players Player[]
   matches Match[]
+  teams Team[]
 
   @@map("groups")
 }
@@ -63,7 +64,7 @@ model Player {
   groupId String @db.Uuid
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  teams Team[]
+  teams PlayerInTeam[]
 
   @@map("players")
 }
@@ -71,7 +72,7 @@ model Player {
 model Match {
   id String @id @default(uuid()) @db.Uuid
   date DateTime @default(now())
-  teams Team[]
+  teams TeamInMatch[]
 
   groupId String @db.Uuid
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
@@ -82,15 +83,43 @@ model Match {
 model Team {
   id String @id @default(uuid()) @db.Uuid
   name String
-  result TeamResults?
-  score Int?
 
-  matchId String @db.Uuid
-  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  players Player[]
+  groupId  String @db.Uuid
+  group    Group  @relation(fields: [groupId], references: [id])
+
+  match TeamInMatch[]
 
   @@map("teams")
 }
+
+model TeamInMatch {
+  id        String        @id @default(uuid()) @db.Uuid
+  matchId   String        @db.Uuid
+  teamId    String        @db.Uuid
+  result    TeamResults?
+  score     Int?
+
+  match     Match         @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team      Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  players   PlayerInTeam[] 
+
+  @@unique([matchId, teamId]) 
+  @@map("teams_in_matches")
+}
+
+model PlayerInTeam {
+  id            String        @id @default(uuid()) @db.Uuid
+  teamInMatchId String        @db.Uuid
+  playerId      String        @db.Uuid
+  isActive      Boolean?      @default(true)
+
+  teamInMatch   TeamInMatch   @relation(fields: [teamInMatchId], references: [id], onDelete: Cascade)
+  player        Player        @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([teamInMatchId, playerId]) 
+  @@map("players_in_teams")
+}
+
 
 
 // ENUMS

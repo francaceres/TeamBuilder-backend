@@ -14,10 +14,7 @@ import {
 import { CreatePlayerDTO, UpdatePlayerDTO } from './dto';
 import { PlayersService } from './players.service';
 import { FindManyOptionsDTO } from 'src/shared/dto';
-import {
-  RoleBasedGroupAccessGuard,
-  VisibilityBasedGroupAccessGuard,
-} from 'src/shared/guards';
+import { GroupAccessGuard } from 'src/shared/guards';
 import { JwtAuthGuard } from '../auth/guards';
 import { GroupRoles } from 'src/shared/decorators';
 import { UserInGroupRole } from '@prisma/client';
@@ -37,7 +34,7 @@ export class PlayersController {
     summary: 'Creates a player associated to a group',
     description: AdminRoleSwaggerDescription,
   })
-  @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
+  @UseGuards(JwtAuthGuard, GroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Post()
   createPlayer(
@@ -51,7 +48,7 @@ export class PlayersController {
     summary: 'Gets a player info and matches',
     description: VisibilitySwaggerDescription,
   })
-  @UseGuards(VisibilityBasedGroupAccessGuard)
+  @UseGuards(GroupAccessGuard)
   @Get('/:playerId')
   getPlayer(@Param('playerId') playerId: string) {
     return this.playerService.getPlayer(playerId);
@@ -61,7 +58,7 @@ export class PlayersController {
     summary: 'Gets all players from a group',
     description: VisibilitySwaggerDescription,
   })
-  @UseGuards(VisibilityBasedGroupAccessGuard)
+  @UseGuards(GroupAccessGuard)
   @Get()
   getPlayers(
     @Param('groupId') groupId: string,
@@ -75,7 +72,7 @@ export class PlayersController {
     summary: 'Updates a player info',
     description: AdminRoleSwaggerDescription,
   })
-  @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
+  @UseGuards(JwtAuthGuard, GroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Patch('/:playerId')
   updatePlayer(
@@ -91,7 +88,7 @@ export class PlayersController {
     description: AdminRoleSwaggerDescription,
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
+  @UseGuards(JwtAuthGuard, GroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Delete('/:playerId')
   deletePlayer(@Param('playerId') playerId: string) {

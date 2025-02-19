@@ -5,7 +5,6 @@ import { UsersModule } from 'src/modules/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy, LocalStrategy } from './strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { VisibilityBasedGroupAccessGuard } from 'src/shared/guards';
 
 @Module({
   imports: [
@@ -17,12 +16,7 @@ import { VisibilityBasedGroupAccessGuard } from 'src/shared/guards';
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    VisibilityBasedGroupAccessGuard,
-  ],
-  exports: [AuthService, JwtModule, VisibilityBasedGroupAccessGuard],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

@@ -1,10 +1,5 @@
-import {
-  ArrayMaxSize,
-  ArrayMinSize,
-  IsDate,
-  IsOptional,
-} from 'class-validator';
-import { UpdateTeamDTO } from '.';
+import { IsArray, IsDate, IsOptional, ValidateNested } from 'class-validator';
+import { UpdateTeamInMatchDTO } from '.';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { TeamResults } from '@prisma/client';
@@ -39,8 +34,9 @@ export class UpdateMatchDTO {
       },
     ],
   })
-  @IsOptional()
-  @ArrayMinSize(1)
-  @ArrayMaxSize(2)
-  teams?: UpdateTeamDTO[];
+  @IsOptional() // El campo es opcional
+  @IsArray() // Valida que sea un array
+  @ValidateNested({ each: true }) // Valida cada elemento del array
+  @Type(() => UpdateTeamInMatchDTO) // Transforma los objetos a la clase correcta
+  teams?: UpdateTeamInMatchDTO[]; // Equipos actualizados (opcional)
 }

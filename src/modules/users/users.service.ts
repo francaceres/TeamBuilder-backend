@@ -3,6 +3,7 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateUserDTO, UpdateEmailDTO, UpdatePasswordDTO } from './dto';
 import * as argon from 'argon2';
 import { RequestUser } from 'src/shared/types';
+import { FindManyOptionsDTO } from 'src/shared/dto';
 
 @Injectable()
 export class UsersService {
@@ -35,6 +36,28 @@ export class UsersService {
         groups: { select: { role: true, group: true } },
       },
     });
+  }
+
+  async getUsersFromGroup(groupId: string, query: FindManyOptionsDTO) {
+    const { page = 1, pageSize = 10 } = query;
+
+    const users = await this.prisma.userInGroup.findMany({
+      where: { groupId },
+      take: pageSize,
+      skip: (page - 1) * pageSize,
+      select: { id: true, role: true, user: { select: { name: true } } },
+    });
+
+    const totalCount = await this.prisma.user.count({
+      where: { groups: { some: { groupId } } },
+    });
+
+    return {
+      totalCount,
+      data: users,
+      page,
+      pageSize,
+    };
   }
 
   async updateEmail(dto: UpdateEmailDTO, user: RequestUser) {

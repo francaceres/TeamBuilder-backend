@@ -11,14 +11,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateMatchDTO, UpdateMatchDTO } from './dto';
+import { UpdateMatchDTO } from './dto';
 import { MatchesService } from './matches.service';
 import { FindManyOptionsDTO } from 'src/shared/dto';
 import { JwtAuthGuard } from '../auth/guards';
-import {
-  RoleBasedGroupAccessGuard,
-  VisibilityBasedGroupAccessGuard,
-} from 'src/shared/guards';
+import { GroupAccessGuard } from 'src/shared/guards';
 import { GroupRoles } from 'src/shared/decorators';
 import { UserInGroupRole } from '@prisma/client';
 import {
@@ -31,6 +28,7 @@ import {
   AdminRoleSwaggerDescription,
   VisibilitySwaggerDescription,
 } from 'src/shared/constants';
+import { CreateMatchRequestDTO } from './dto/create-match-request.dto';
 
 @ApiTags('Matches')
 @Controller('/groups/:groupId/matches')
@@ -43,10 +41,13 @@ export class MatchesController {
       'Creates a match with two teams, also creates players if non-registered players are selected',
     description: AdminRoleSwaggerDescription,
   })
-  @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
+  @UseGuards(JwtAuthGuard, GroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Post()
-  createMatch(@Param('groupId') groupId: string, @Body() dto: CreateMatchDTO) {
+  createMatch(
+    @Param('groupId') groupId: string,
+    @Body() dto: CreateMatchRequestDTO,
+  ) {
     return this.matchesService.createMatch(groupId, dto);
   }
 
@@ -54,7 +55,7 @@ export class MatchesController {
     summary: 'Gets one match',
     description: VisibilitySwaggerDescription,
   })
-  @UseGuards(VisibilityBasedGroupAccessGuard)
+  @UseGuards(GroupAccessGuard)
   @Get('/:matchId')
   getMatch(@Param('matchId') matchId: string) {
     return this.matchesService.getMatch(matchId);
@@ -68,12 +69,12 @@ export class MatchesController {
     status: 200,
     example: {
       totalCount: 50,
-      matches: ['match1', 'match2'],
+      data: ['match1', 'match2'],
       page: 1,
       pageSize: 2,
     },
   })
-  @UseGuards(VisibilityBasedGroupAccessGuard)
+  @UseGuards(GroupAccessGuard)
   @Get()
   getMatches(
     @Param('groupId') groupId: string,
@@ -87,15 +88,11 @@ export class MatchesController {
     summary: 'Updates a match',
     description: AdminRoleSwaggerDescription,
   })
-  @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
+  @UseGuards(JwtAuthGuard, GroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @Patch('/:matchId')
-  updateMatch(
-    @Param('groupId') groupId: string,
-    @Param('matchId') matchId: string,
-    @Body() dto: UpdateMatchDTO,
-  ) {
-    return this.matchesService.updateMatch(groupId, matchId, dto);
+  updateMatch(@Param('matchId') matchId: string, @Body() dto: UpdateMatchDTO) {
+    return this.matchesService.updateMatch(matchId, dto);
   }
 
   @ApiBearerAuth()
@@ -103,7 +100,7 @@ export class MatchesController {
     summary: 'Deletes a match',
     description: AdminRoleSwaggerDescription,
   })
-  @UseGuards(JwtAuthGuard, RoleBasedGroupAccessGuard)
+  @UseGuards(JwtAuthGuard, GroupAccessGuard)
   @GroupRoles([UserInGroupRole.ADMIN, UserInGroupRole.OWNER])
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:matchId')

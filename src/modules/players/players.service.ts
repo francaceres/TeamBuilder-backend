@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePlayerDTO, UpdatePlayerDTO } from './dto';
-import { FindManyOptionsDTO, SortOrder } from 'src/shared/dto';
-import { Prisma } from '@prisma/client';
+import {
+  FindManyOptionsDTO,
+  FindManyResponseDTO,
+  SortOrder,
+} from 'src/shared/dto';
+import { Player, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PlayersService {
@@ -22,11 +26,14 @@ export class PlayersService {
   async getPlayer(playerId: string) {
     return this.prisma.player.findUniqueOrThrow({
       where: { id: playerId },
-      include: { teams: { include: { match: true } } },
+      include: { teams: { include: { player: { include: { teams: true } } } } },
     });
   }
 
-  async getPlayers(groupId: string, query: FindManyOptionsDTO) {
+  async getPlayers(
+    groupId: string,
+    query: FindManyOptionsDTO,
+  ): Promise<FindManyResponseDTO<Player>> {
     const {
       filter,
       page = 1,
@@ -58,7 +65,7 @@ export class PlayersService {
 
     return {
       totalCount,
-      players,
+      data: players,
       page,
       pageSize,
     };

@@ -7,7 +7,7 @@ export function setupSwagger(app: INestApplication) {
     .setDescription(
       'API used for the team building application called TeamBuilder. Developed by Francisco Cáceres',
     )
-    .setVersion('1.0')
+    .setVersion('0.1')
     .addBearerAuth()
     .build();
 

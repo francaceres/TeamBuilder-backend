@@ -1,25 +1,24 @@
 import { TeamResults } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
-  ArrayNotEmpty,
+  IsArray,
   IsEnum,
   IsInt,
-  IsNotEmpty,
   IsOptional,
-  IsString,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { MatchPlayerDTO } from 'src/modules/players/dto';
+import { UpdatePlayerInTeamDTO } from 'src/modules/players/dto/update-player-in-team.dto';
 
-export class UpdateTeamDTO {
-  @IsNotEmpty()
+export class UpdateTeamInMatchDTO {
   @IsUUID()
   id: string;
 
   @IsOptional()
-  @IsString()
-  name?: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdatePlayerInTeamDTO)
+  players?: UpdatePlayerInTeamDTO[];
 
   @IsOptional()
   @IsEnum(TeamResults)
@@ -28,10 +27,4 @@ export class UpdateTeamDTO {
   @IsOptional()
   @IsInt()
   score?: number;
-
-  @IsOptional()
-  @ArrayNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => MatchPlayerDTO)
-  players?: MatchPlayerDTO[];
 }

@@ -5,7 +5,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -19,6 +21,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { VisibilitySwaggerDescription } from 'src/shared/constants';
+import { FindManyOptionsDTO } from 'src/shared/dto';
+import { GroupAccessGuard } from 'src/shared/guards';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -40,6 +45,28 @@ export class UsersController {
   @Get('me')
   getMe(@CurrentUser() user: RequestUser) {
     return this.usersService.getMe(user);
+  }
+
+  @ApiOperation({
+    summary: 'Gets users associated to a determined group',
+    description: VisibilitySwaggerDescription,
+  })
+  @ApiResponse({
+    status: 200,
+    example: {
+      totalCount: 50,
+      data: ['user1', 'user2'],
+      page: 1,
+      pageSize: 2,
+    },
+  })
+  @UseGuards(JwtAuthGuard, GroupAccessGuard)
+  @Get('groupId/:groupId')
+  getUsersFromGroup(
+    @Param('groupId') groupId: string,
+    @Query() query: FindManyOptionsDTO,
+  ) {
+    return this.usersService.getUsersFromGroup(groupId, query);
   }
 
   @ApiOperation({ summary: 'Updates current user email' })
